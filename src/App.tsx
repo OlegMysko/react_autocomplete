@@ -3,37 +3,35 @@ import { useEffect } from 'react';
 import './App.scss';
 import { peopleFromServer } from './data/people';
 
-
-
 export const App: React.FC = () => {
+  const [inputValue, setInputValue] = useState('');
+  const [dropDownVisible, setDropdownVisible] = useState(false);
+  const [people, setPeople] = useState<Person[]>([]);
 
-  const [inputValue, setInputValue] = useState('')
-  const [dropDownVisible, setDropdownVisible]=useState(false)
-  const [people,setPeople]=useState<Person[]>([])
-
-  const selectedPerson = peopleFromServer.find(person => person.name === inputValue);
-const title = selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})` : "No selected person";
-
-
+  const selectedPerson = peopleFromServer.find(
+    person => person.name === inputValue,
+  );
+  const title = selectedPerson
+    ? `${selectedPerson.name} (${selectedPerson.born} - ${selectedPerson.died})`
+    : 'No selected person';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     setDropdownVisible(true);
   };
+
   const handleSuggestionClick = (person: Person) => {
     setInputValue(person.name);
     setDropdownVisible(false);
   };
-
-
 
   useEffect(() => {
     const handler = setTimeout(() => {
       if (inputValue.trim()) {
         setPeople(
           peopleFromServer.filter(person =>
-            person.name.toLowerCase().includes(inputValue.toLowerCase())
-          )
+            person.name.toLowerCase().includes(inputValue.toLowerCase()),
+          ),
         );
       } else {
         setPeople(peopleFromServer);
@@ -43,8 +41,6 @@ const title = selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} -
     return () => clearTimeout(handler);
   }, [inputValue]);
 
-
-
   return (
     <div className="container">
       <main className="section is-flex is-flex-direction-column">
@@ -52,7 +48,7 @@ const title = selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} -
           {`${title}`}
         </h1>
 
-        <div className={ !dropDownVisible?"dropdown":"dropdown is-active"}>
+        <div className={!dropDownVisible ? 'dropdown' : 'dropdown is-active'}>
           <div className="dropdown-trigger">
             <input
               value={inputValue}
@@ -67,30 +63,30 @@ const title = selectedPerson ? `${selectedPerson.name} (${selectedPerson.born} -
 
           <div className="dropdown-menu" role="menu" data-cy="suggestions-list">
             <div className="dropdown-content">
-            {people.map((person) => (
-  <div
-    key={person.slug}
-    className="dropdown-item"
-    data-cy="suggestion-item"
-    onClick={() => handleSuggestionClick(person)}
-  >
-    <p className="has-text-link">{person.name}</p>
-  </div>
-))}
+              {people.map(person => (
+                <div
+                  key={person.slug}
+                  className="dropdown-item"
+                  data-cy="suggestion-item"
+                  onClick={() => handleSuggestionClick(person)}
+                >
+                  <p className="has-text-link">{person.name}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {people.length === 0 && inputValue.trim() && (
-  <div
-    className="notification is-danger is-light mt-3 is-align-self-flex-start"
-    role="alert"
-    data-cy="no-suggestions-message"
-  >
-    <p className="has-text-danger">No matching suggestions</p>
-  </div>
-)}
-
+          <div
+            className="notification is-danger
+            is-light mt-3 is-align-self-flex-start"
+            role="alert"
+            data-cy="no-suggestions-message"
+          >
+            <p className="has-text-danger">No matching suggestions</p>
+          </div>
+        )}
       </main>
     </div>
   );
