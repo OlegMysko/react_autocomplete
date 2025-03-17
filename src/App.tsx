@@ -26,20 +26,25 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (inputValue.trim()) {
-        setPeople(
-          peopleFromServer.filter(person =>
-            person.name.toLowerCase().includes(inputValue.toLowerCase()),
-          ),
-        );
-      } else {
-        setPeople(peopleFromServer);
-      }
-    }, 300);
+    const trimmedValue = inputValue.trim();
 
-    return () => clearTimeout(handler);
+    if (trimmedValue === inputValue) {
+      const handler = setTimeout(() => {
+        if (trimmedValue) {
+          setPeople(
+            peopleFromServer.filter(person =>
+              person.name.toLowerCase().includes(trimmedValue.toLowerCase())
+            )
+          );
+        } else {
+          setPeople(peopleFromServer);
+        }
+      }, 300);
+
+      return () => clearTimeout(handler);
+    }
   }, [inputValue]);
+
 
   return (
     <div className="container">
